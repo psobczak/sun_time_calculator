@@ -2,10 +2,10 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct Coordinate {
-    degrees: i16,
-    minutes: u16,
-    seconds: u16,
-    direction: Direction,
+    pub degrees: i16,
+    pub minutes: u16,
+    pub seconds: u16,
+    pub direction: Direction,
 }
 
 impl fmt::Display for Coordinate {
