@@ -1,60 +1,97 @@
 mod coordinate;
+mod time_calculator;
+
+use chrono::{DateTime, Utc};
 use coordinate::{Coordinate, Direction};
+use serde::Deserialize;
+use std::error::Error;
+use std::fmt;
+use time_calculator::SunTimeCalculator;
 
-fn main() {
-    // let lat = Coordinate::new(122, 13, 56, Direction::W);
-    // let long = Coordinate::new(21, 00, 30, Direction::E);
-    // // let warsaw = Place::new(lat, long, String::from("Warszawa"));
-    // // println!("{}", warsaw)
+fn main() -> Result<(), Box<dyn Error>> {
+    let rdr = csv::ReaderBuilder::new()
+        .has_headers(true)
+        .from_path("data/worldcities.csv");
 
-    let degree = 338.8671;
-    let xd = DecimalDegree::new(degree, CoordinateType::Longitude).to_coordinates();
-    println!("{}", xd);
+    for result in rdr?.deserialize() {
+        let record: Record = result?;
+        let city = record.map_to_city();
+        println!("{}", city);
+    }
+
+    let tokyo = City::new(
+        DecimalDegree::new(35.6897, CoordinateType::Latitude),
+        DecimalDegree::new(20.78, CoordinateType::Longitude),
+        String::from("Tokyo"),
+    );
+
+    let jakarta = City::new(
+        DecimalDegree::new(-6.2146, CoordinateType::Latitude),
+        DecimalDegree::new(-35.5, CoordinateType::Longitude),
+        String::from("Jakarta"),
+    );
+
+    // let calculator = SunTimeCalculator::new(tokyo, Utc::now()).calculate_time(&jakarta);
+
+    // println!("{:?}", calculator);
+
+    Ok(())
 }
 
-// struct Place {
-//     latitude: f32,
-//     longitude: f32,
-//     name: String,
-// }
+#[derive(Debug, Deserialize)]
+struct Record {
+    city: String,
+    lat: f32,
+    lng: f32,
+    country: String,
+}
 
-// #[derive(Debug)]
-// struct Place {
-//     latitiude: Coordinate,
-//     longitude: Coordinate,
-//     name: String,
-// }
+impl Record {
+    fn map_to_city(&self) -> City {
+        City::new(
+            DecimalDegree::new(self.lat, CoordinateType::Latitude),
+            DecimalDegree::new(self.lng, CoordinateType::Longitude),
+            self.city.clone(),
+        )
+    }
+}
 
-// impl Place {
-//     fn new(latitiude: Coordinate, longitude: Coordinate, name: String) -> Self {
-//         Place {
-//             latitiude,
-//             longitude,
-//             name,
-//         }
-//     }
-// }
+pub struct City {
+    latitude: DecimalDegree,
+    longitude: DecimalDegree,
+    name: String,
+}
 
-// impl fmt::Display for Place {
-//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//         write!(
-//             f,
-//             "{} | Lat: {}, Long: {}",
-//             self.name, self.latitiude, self.longitude
-//         )
-//     }
-// }
+impl City {
+    fn new(latitude: DecimalDegree, longitude: DecimalDegree, name: String) -> Self {
+        City {
+            latitude,
+            longitude,
+            name,
+        }
+    }
+}
+
+impl fmt::Display for City {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{} | Lat: {}, Long: {}",
+            self.name, self.latitude.degree, self.longitude.degree
+        )
+    }
+}
 
 #[derive(Debug)]
-enum CoordinateType {
-    Latitiude,
+pub enum CoordinateType {
+    Latitude,
     Longitude,
 }
 
 #[derive(Debug)]
-struct DecimalDegree {
-    degree: f32,
-    coordinate_type: CoordinateType,
+pub struct DecimalDegree {
+    pub degree: f32,
+    pub coordinate_type: CoordinateType,
 }
 
 impl DecimalDegree {
@@ -67,12 +104,12 @@ impl DecimalDegree {
 
     fn to_coordinates(&self) -> Coordinate {
         let degrees = self.degree.trunc();
-        let minutes = (self.degree - degrees) * 60.0;
+        let minutes = (self.degree - degrees).abs() * 60.0;
         let minutes_diff = minutes - minutes.floor();
         let seconds = (minutes_diff * 60.0).floor();
 
         let direction = match self.coordinate_type {
-            CoordinateType::Latitiude => {
+            CoordinateType::Latitude => {
                 if degrees < 0.0 {
                     Direction::S
                 } else {
@@ -83,12 +120,11 @@ impl DecimalDegree {
                 if degrees < 0.0 {
                     Direction::E
                 } else {
-                    Direction::N
+                    Direction::W
                 }
             }
         };
 
-        let coordinate = Coordinate::new(degrees as i16, minutes as u16, seconds as u16, direction);
-        coordinate
+        Coordinate::new(degrees as i16, minutes as u16, seconds as u16, direction)
     }
 }

@@ -26,7 +26,7 @@ impl Coordinate {
                 _ => panic!("Degrees must be between -180 and 180"),
             },
             Direction::N | Direction::S => match degrees {
-                0..=90 => degrees,
+                -90..=90 => degrees,
                 _ => panic!("Degrees must be between 0 and 90"),
             },
         };
