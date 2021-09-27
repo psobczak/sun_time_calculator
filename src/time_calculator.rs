@@ -21,9 +21,10 @@ impl SunTimeCalculator {
             (Direction::E, Direction::W) | (Direction::W, Direction::E) => {
                 first_longitude.degrees.abs() + second_longitude.degrees.abs()
             }
+   
             _ => (first_longitude.degrees.abs() - second_longitude.degrees.abs()).abs(),
         };
-        // TODO: Fix failing test when both are on eastern side!
+        
         longitude_diff
     }
 }
@@ -37,7 +38,7 @@ mod tests {
     use test_case::test_case;
 
     #[test_case(-10.0, -43.5, 33; "when both longitudes are on western side")]
-    #[test_case(100.0, 43.5, 143; "when both longitudes are on eastern side")]
+    #[test_case(100.0, 43.5, 57; "when both longitudes are on eastern side")]
     #[test_case(-10.0, 43.5, 53; "when one longitudes is on western and other on eastern side")]
     #[test_case(10.0, -43.5, 53; "when one longitudes is on eastern and other on western side")]
     #[test_case(11.0, 11.0, 0; "when both longitudes are on the same meridian")]
