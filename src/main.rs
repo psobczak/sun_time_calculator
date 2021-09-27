@@ -9,31 +9,33 @@ use std::fmt;
 use time_calculator::SunTimeCalculator;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let rdr = csv::ReaderBuilder::new()
-        .has_headers(true)
-        .from_path("data/worldcities.csv");
+    // let rdr = csv::ReaderBuilder::new()
+    //     .has_headers(true)
+    //     .from_path("data/worldcities.csv");
 
-    for result in rdr?.deserialize() {
-        let record: Record = result?;
-        let city = record.map_to_city();
-        println!("{}", city);
-    }
+    // for result in rdr?.deserialize() {
+    //     let record: Record = result?;
+    //     let city = record.map_to_city();
+    //     println!("{}", city);
+    // }
 
-    let tokyo = City::new(
-        DecimalDegree::new(35.6897, CoordinateType::Latitude),
-        DecimalDegree::new(20.78, CoordinateType::Longitude),
-        String::from("Tokyo"),
-    );
+    // let tokyo = City::new(
+    //     DecimalDegree::new(35.6897, CoordinateType::Latitude),
+    //     DecimalDegree::new(20.78, CoordinateType::Longitude),
+    //     String::from("Tokyo"),
+    // );
 
-    let jakarta = City::new(
-        DecimalDegree::new(-6.2146, CoordinateType::Latitude),
-        DecimalDegree::new(-35.5, CoordinateType::Longitude),
-        String::from("Jakarta"),
-    );
+    // let jakarta = City::new(
+    //     DecimalDegree::new(-6.2146, CoordinateType::Latitude),
+    //     DecimalDegree::new(-35.5, CoordinateType::Longitude),
+    //     String::from("Jakarta"),
+    // );
 
-    // let calculator = SunTimeCalculator::new(tokyo, Utc::now()).calculate_time(&jakarta);
+    let first_longitude = DecimalDegree::new(10.23, CoordinateType::Longitude);
+    let second_longitude = DecimalDegree::new(-23.44, CoordinateType::Longitude);
 
-    // println!("{:?}", calculator);
+    let actual = SunTimeCalculator::new(first_longitude, Utc::now())
+        .sun_time_diff(&second_longitude.to_coordinates());
 
     Ok(())
 }

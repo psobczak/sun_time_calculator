@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'sample'",
+            "name": "Debug executable 'sun_time_calculator'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=sample",
-                    "--package=sample"
+                    "--bin=sun_time_calculator",
+                    "--package=sun_time_calculator"
                 ],
                 "filter": {
-                    "name": "sample",
+                    "name": "sun_time_calculator",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'sample'",
+            "name": "Debug unit tests in executable 'sun_time_calculator'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=sample",
-                    "--package=sample"
+                    "--bin=sun_time_calculator",
+                    "--package=sun_time_calculator"
                 ],
                 "filter": {
-                    "name": "sample",
+                    "name": "sun_time_calculator",
                     "kind": "bin"
                 }
             },
